@@ -1,0 +1,21 @@
+- name: Deploy Docker Compose with updated environment variables
+  hosts: localhost
+  connection: local
+  become: false
+  gather_facts: no
+
+  vars_files:
+    - vars/env_vars.yml
+
+  tasks:
+    - name: Ensure docker-compose.yml is rendered from template
+      ansible.builtin.template:
+        src: templates/docker-compose.yml.j2
+        dest: "{{ playbook_dir }}/docker-compose.yml"
+        mode: '0644'
+
+    - name: Deploy or update Docker services
+      ansible.builtin.command:
+        cmd: docker compose up -d
+        chdir: "{{ playbook_dir }}"
+        
